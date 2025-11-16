@@ -26,3 +26,4 @@ Route::resource('/home', ToyController::class);
 
 Auth::routes();
 
+Route::post('/toys/send-email', [\App\Http\Controllers\ToyController::class, 'sendEmail'])->name('toys.sendEmail');

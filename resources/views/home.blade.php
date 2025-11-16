@@ -22,6 +22,13 @@
                             @endforeach
                         </ul>
                     @endif
+
+                    <form class="mt-2" action="{{ route('toys.sendEmail') }}" method="POST">
+                            @csrf
+                            <button type="submit" class="btn btn-primary">
+                                Enviar
+                            </button>
+                        </form>
                 </div>
             </div>
         </div>

@@ -7,6 +7,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use App\Http\Requests\ToyRequest;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\View\View;
 
@@ -83,4 +84,30 @@ class ToyController extends Controller
         return Redirect::route('toys.index')
             ->with('success', 'Toy deleted successfully');
     }
+
+    public function sendEmail()
+{
+    $name = session('name');
+    $email = session('email');
+    $gender_id = session('gender_id');
+
+    if (!$email || !$name || !$gender_id) {
+        return back()->with('error', 'No se pudo obtener la información del usuario.');
+    }
+
+    $toys = \App\Models\Toy::where('gender_id', $gender_id)->get();
+
+    $toyList = $toys->map(function($toy) {
+        return "{$toy->name} - $" . number_format($toy->price, 2) . " - {$toy->description}";
+    })->implode("\n");
+
+    $messageBody = "Hola $name,\n\nEstos son los juguetes disponibles para tu género:\n\n$toyList";
+
+    Mail::raw($messageBody, function ($message) use ($email) {
+        $message->to($email)
+                ->subject('Lista de juguetes para ti');
+    });
+
+    return back()->with('status', 'Correo enviado correctamente a ' . $email);
+}
 }
